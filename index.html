@@ -116,28 +116,48 @@
             }, 100);
         }
 
-        function checkWin() {
+                function checkWin() {
             const r1 = document.getElementById("reel1").innerText;
             const r2 = document.getElementById("reel2").innerText;
             const r3 = document.getElementById("reel3").innerText;
             const resultDiv = document.getElementById("result");
 
+            let winAmount = 0;
+            let status = "lose";
+
             if (r1 === r2 && r2 === r3) {
                 if (r1 === "7️⃣") {
+                    winAmount = 1500;
+                    status = "jackpot";
                     resultDiv.innerText = "🎉 Джекпот! +1500 💰";
                     resultDiv.style.color = "#00f0ff";
                 } else {
+                    winAmount = 500;
+                    status = "win3";
                     resultDiv.innerText = "💥 Три в ряд! +500 💰";
                     resultDiv.style.color = "#00ffcc";
                 }
             } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+                winAmount = 150;
+                status = "win2";
                 resultDiv.innerText = "💵 Совпали два! +150 💰";
                 resultDiv.style.color = "#ffeb3b";
             } else {
+                winAmount = 0;
+                status = "lose";
                 resultDiv.innerText = "😢 Пусто. Повезет снова!";
                 resultDiv.style.color = "#ff4444";
             }
+
+            // Отправляем результат игры обратно в нашего Python-бота через API Telegram
+            // Бот получит строку вида "webapp_slots:win2:150"
+            setTimeout(() => {
+                tg.sendData(`webapp_slots:${status}:${winAmount}`);
+                tg.close(); // Автоматически закрываем игровое окно после прокрутки
+            }, 1500);
         }
+
     </script>
 </body>
 </html>
+    
