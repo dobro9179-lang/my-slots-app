@@ -1,124 +1,64 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Slots</title>
+    <title>Slots</title>
     <script src="https://telegram.org"></script>
     <style>
-        body {
-            background: #150024;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-        }
-        .machine {
-            background: #000;
-            border: 4px solid #ff007f;
-            display: inline-block;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px #ff007f;
-        }
-        .reel {
-            display: inline-block;
-            width: 70px;
-            height: 70px;
-            background: #fff;
-            margin: 10px;
-            border-radius: 10px;
-            font-size: 45px;
-            line-height: 70px;
-        }
-        .btn {
-            background: linear-gradient(45deg, #ff007f, #7f00ff);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 15px #ff007f;
-            margin-top: 25px;
-        }
-        #info {
-            font-size: 20px;
-            margin-top: 20px;
-            font-weight: bold;
-        }
+        body { background: #1a002c; color: white; font-family: Arial; text-align: center; padding-top: 50px; }
+        .machine { background: #000; border: 3px solid #ff007f; display: inline-block; padding: 20px; border-radius: 15px; }
+        .reel { display: inline-block; width: 60px; height: 60px; font-size: 40px; background: white; margin: 5px; border-radius: 10px; line-height: 60px; color: black; }
+        .btn { background: #ff007f; color: white; border: none; padding: 15px 40px; font-size: 20px; border-radius: 20px; cursor: pointer; margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <h2>🎰 LUCKY NEON SLOTS 🎰</h2>
-    
+    <h2>🎰 LUCKY SLOTS 🎰</h2>
     <div class="machine">
-        <div id="box1" class="reel">🍒</div>
-        <div id="box2" class="reel">🍋</div>
-        <div id="box3" class="reel">7️⃣</div>
+        <div id="r1" class="reel">🍒</div>
+        <div id="r2" class="reel">🍋</div>
+        <div id="r3" class="reel">7️⃣</div>
     </div>
-    
     <br>
-    <button class="btn" onclick="startSpin()">SPIN!</button>
-    
-    <p id="info">Нажми кнопку, чтобы играть!</p>
+    <button class="btn" onclick="play()">SPIN!</button>
+    <p id="res">Нажми SPIN!</p>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем окно на максимум
+        tg.expand();
+        const items = ["🍒", "🍋", "7️⃣", "💎", "🍇"];
 
-        const symbols = ["🍒", "🍋", "7️⃣", "💎", "🍇"];
-
-        function startSpin() {
-            document.getElementById("info").innerText = "🎰 Барабаны крутятся...";
+        function play() {
+            document.getElementById("res").innerText = "🎰 Расчет...";
             
-            let count = 0;
-            // Запускаем быстрое переключение эмодзи в коробках
-            const timer = setInterval(() => {
-                document.getElementById("box1").innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                document.getElementById("box2").innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                document.getElementById("box3").innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                
-                count++;
-                
-                // Останавливаем вращение через 10 шагов (1 секунда)
-                if (count > 10) {
-                    clearInterval(timer);
-                    evaluateResult();
-                }
-            }, 100);
-        }
-
-        function evaluateResult() {
-            const b1 = document.getElementById("box1").innerText;
-            const b2 = document.getElementById("box2").innerText;
-            const b3 = document.getElementById("box3").innerText;
+            // Мгновенно выбираем случайные эмодзи без зависающих таймеров
+            const v1 = items[Math.floor(Math.random() * items.length)];
+            const v2 = items[Math.floor(Math.random() * items.length)];
+            const v3 = items[Math.floor(Math.random() * items.length)];
+            
+            document.getElementById("r1").innerText = v1;
+            document.getElementById("r2").innerText = v2;
+            document.getElementById("r3").innerText = v3;
             
             let status = "lose";
             let win = 0;
-
-            if (b1 === b2 && b2 === b3) {
-                if (b1 === "7️⃣") {
-                    status = "jackpot"; win = 1500;
-                    document.getElementById("info").innerText = "🎉 ДЖЕКПОТ! +1500 💰";
-                } else {
-                    status = "win3"; win = 500;
-                    document.getElementById("info").innerText = "💥 ТРИ В РЯД! +500 💰";
-                }
-            } else if (b1 === b2 || b2 === b3 || b1 === b3) {
+            
+            if(v1 === v2 && v2 === v3) {
+                if (v1 === "7️⃣") { status = "jackpot"; win = 1500; }
+                else { status = "win3"; win = 500; }
+                document.getElementById("res").innerText = "🎉 ПОБЕДА!";
+            } else if(v1 === v2 || v2 === v3 || v1 === v3) {
                 status = "win2"; win = 150;
-                document.getElementById("info").innerText = "💵 СОВПАЛИ ДВА! +150 💰";
+                document.getElementById("res").innerText = "💵 СОВПАДЕНИЕ!";
             } else {
-                document.getElementById("info").innerText = "😢 МИМО! ПОПРОБУЙ СНОВА!";
+                document.getElementById("res").innerText = "😢 ПУСТО";
             }
-
-            // Отправляем результат обратно в нашего Python-бота
+            
+            // Через секунду закрываем окно и передаем данные боту
             setTimeout(() => {
-                tg.sendData("webapp_slots:" + status + ":" + win);
-                tg.close(); // Закрываем окно
-            }, 1500);
+                tg.sendData(`webapp_slots:${status}:${win}`);
+                tg.close();
+            }, 1000);
         }
     </script>
 </body>
