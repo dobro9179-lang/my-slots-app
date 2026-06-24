@@ -1,163 +1,67 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Slots WebApp</title>
-    <!-- Подключаем официальный скрипт Telegram WebApp API -->
+    <title>Slots</title>
     <script src="https://telegram.org"></script>
     <style>
-        body {
-            background: radial-gradient(circle, #2c003e, #0f001a);
-            color: #fff;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            overflow: hidden;
-        }
-        h1 {
-            color: #ff007f;
-            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
-            font-size: 28px;
-            margin-bottom: 30px;
-        }
-        .slot-machine {
-            background: #1a1a2e;
-            border: 4px solid #00f0ff;
-            border-radius: 20px;
-            box-shadow: 0 0 20px #00f0ff, inset 0 0 15px #00f0ff;
-            display: inline-block;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        .reel-container {
-            display: flex;
-            gap: 15px;
-            background: #0f0f1a;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        .reel {
-            width: 70px;
-            height: 70px;
-            background: #fff;
-            border-radius: 10px;
-            font-size: 45px;
-            line-height: 70px;
-            transition: transform 0.1s ease;
-        }
-        .spin-btn {
-            background: linear-gradient(45deg, #ff007f, #7f00ff);
-            border: none;
-            color: white;
-            padding: 15px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 15px #ff007f;
-            transition: 0.2s;
-        }
-        .spin-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 5px #ff007f;
-        }
-        #result {
-            font-size: 22px;
-            font-weight: bold;
-            height: 30px;
-            margin-top: 20px;
-            text-shadow: 0 0 5px #fff;
-        }
+        body { background: #1a002c; color: white; font-family: Arial; text-align: center; padding-top: 50px; }
+        .machine { background: #000; border: 3px solid #ff007f; display: inline-block; padding: 20px; border-radius: 15px; }
+        .reel { display: inline-block; width: 60px; height: 60px; font-size: 40px; background: white; margin: 5px; border-radius: 10px; line-height: 60px; }
+        .btn { background: #ff007f; color: white; border: none; padding: 10px 30px; font-size: 18px; border-radius: 20px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-
-    <h1>🎰 LUCKY NEON SLOTS 🎰</h1>
-
-    <div class="slot-machine">
-        <div class="reel-container">
-            <div id="reel1" class="reel">🍒</div>
-            <div id="reel2" class="reel">🍋</div>
-            <div id="reel3" class="reel">7️⃣</div>
-        </div>
+    <h2>🎰 LUCKY SLOTS 🎰</h2>
+    <div class="machine">
+        <div id="r1" class="reel">🍒</div>
+        <div id="r2" class="reel">🍋</div>
+        <div id="r3" class="reel">7️⃣</div>
     </div>
-
     <br>
-    <button class="spin-btn" onclick="spin()">SPIN!</button>
-
-    <div id="result">Испытай удачу!</div>
+    <button class="btn" onclick="play()">SPIN!</button>
+    <p id="res">Нажми SPIN!</p>
 
     <script>
-        // Инициализируем WebApp Telegram
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем окно на максимум
+        tg.expand();
+        const items = ["🍒", "🍋", "7️⃣", "💎"];
 
-        const emojis = ["🍒", "🍋", "7️⃣", "💎", "🍇", "🔔"];
-
-        function spin() {
-            const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = "🎰 Барабаны крутятся... 🎰";
-            resultDiv.style.color = "#fff";
-
-            let count = 0;
-            // Имитация вращения сменой картинок
-            const interval = setInterval(() => {
-                document.getElementById("reel1").innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                document.getElementById("reel2").innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                document.getElementById("reel3").innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                count++;
-
-                if (count > 10) {
-                    clearInterval(interval);
-                    checkWin();
+        function play() {
+            document.getElementById("res").innerText = "🎰 Крутим...";
+            let ticks = 0;
+            let timer = setInterval(() => {
+                document.getElementById("r1").innerText = items[Math.floor(Math.random() * items.length)];
+                document.getElementById("r2").innerText = items[Math.floor(Math.random() * items.length)];
+                document.getElementById("r3").innerText = items[Math.floor(Math.random() * items.length)];
+                ticks++;
+                if(ticks > 8) {
+                    clearInterval(timer);
+                    const v1 = document.getElementById("r1").innerText;
+                    const v2 = document.getElementById("r2").innerText;
+                    const v3 = document.getElementById("r3").innerText;
+                    
+                    let status = "lose";
+                    let win = 0;
+                    
+                    if(v1 === v2 && v2 === v3) {
+                        status = "win3"; win = 500;
+                        document.getElementById("res").innerText = "🎉 Победа! +500";
+                    } else if(v1 === v2 || v2 === v3 || v1 === v3) {
+                        status = "win2"; win = 150;
+                        document.getElementById("res").innerText = "💵 Совпадение! +150";
+                    } else {
+                        document.getElementById("res").innerText = "😢 Пусто";
+                    }
+                    
+                    setTimeout(() => {
+                        tg.sendData(`webapp_slots:${status}:${win}`);
+                        tg.close();
+                    }, 1000);
                 }
             }, 100);
         }
-
-                function checkWin() {
-            const r1 = document.getElementById("reel1").innerText;
-            const r2 = document.getElementById("reel2").innerText;
-            const r3 = document.getElementById("reel3").innerText;
-            const resultDiv = document.getElementById("result");
-
-            let winAmount = 0;
-            let status = "lose";
-
-            if (r1 === r2 && r2 === r3) {
-                if (r1 === "7️⃣") {
-                    winAmount = 1500;
-                    status = "jackpot";
-                    resultDiv.innerText = "🎉 Джекпот! +1500 💰";
-                    resultDiv.style.color = "#00f0ff";
-                } else {
-                    winAmount = 500;
-                    status = "win3";
-                    resultDiv.innerText = "💥 Три в ряд! +500 💰";
-                    resultDiv.style.color = "#00ffcc";
-                }
-            } else if (r1 === r2 || r2 === r3 || r1 === r3) {
-                winAmount = 150;
-                status = "win2";
-                resultDiv.innerText = "💵 Совпали два! +150 💰";
-                resultDiv.style.color = "#ffeb3b";
-            } else {
-                winAmount = 0;
-                status = "lose";
-                resultDiv.innerText = "😢 Пусто. Повезет снова!";
-                resultDiv.style.color = "#ff4444";
-            }
-
-            // Отправляем результат игры обратно в нашего Python-бота через API Telegram
-            // Бот получит строку вида "webapp_slots:win2:150"
-            setTimeout(() => {
-                tg.sendData(`webapp_slots:${status}:${winAmount}`);
-                tg.close(); // Автоматически закрываем игровое окно после прокрутки
-            }, 1500);
-        }
-
     </script>
 </body>
 </html>
-    
